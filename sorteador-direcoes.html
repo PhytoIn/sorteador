@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sorteador de Direções</title>
+    <style>
+        :root {
+            --primary-color: #f8c8dc; /* Rosa pastel */
+            --secondary-color: #c8e6f8; /* Azul pastel */
+            --accent-color: #daf8c8; /* Verde pastel */
+            --text-color: #5a5a5a; /* Cinza escuro para texto */
+            --shadow-color: rgba(0, 0, 0, 0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px;
+            color: var(--text-color);
+        }
+        
+        .header {
+            width: 100%;
+            text-align: center;
+            padding: 15px 0;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px var(--shadow-color);
+            margin-bottom: 20px;
+        }
+        
+        .header h1 {
+            font-size: 1.5rem;
+            color: var(--text-color);
+        }
+        
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex-grow: 1;
+            width: 100%;
+        }
+        
+        .arrow-container {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+        
+        .arrow {
+            width: 120px;
+            height: 120px;
+            fill: var(--text-color);
+            transition: transform 0.5s ease;
+            transform: rotate(270deg); /* Inicialmente aponta para cima */
+        }
+        
+        .btn {
+            padding: 15px 40px;
+            background-color: var(--accent-color);
+            border: none;
+            border-radius: 25px;
+            color: var(--text-color);
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 8px var(--shadow-color);
+            transition: all 0.3s ease;
+            margin-bottom: 30px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px var(--shadow-color);
+        }
+        
+        .btn:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 4px var(--shadow-color);
+        }
+        
+        .footer {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            margin-top: 20px;
+        }
+        
+        .reset-btn {
+            background-color: #E6C8C0;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 4px var(--shadow-color);
+            transition: all 0.3s ease;
+            margin-left: auto;
+        }
+        
+        .reset-btn:hover {
+            transform: rotate(30deg);
+        }
+        
+        .credits {
+            width: 100%;
+            text-align: center;
+            font-size: 0.8rem;
+            padding: 10px 0;
+            color: var(--text-color);
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(270deg); }
+            100% { transform: rotate(270deg + 7200deg); }
+        }
+        
+        .spinning {
+            animation: spin 1s cubic-bezier(0.2, 0.1, 0.8, 1) forwards;
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.2; }
+        }
+        
+        .blinking {
+            animation: blink 0.5s ease-in-out;
+        }
+        
+        .reset-icon {
+            width: 24px;
+            height: 24px;
+            fill: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Sorteador de Direções</h1>
+    </div>
+    
+    <div class="container">
+        <div class="arrow-container">
+            <svg class="arrow" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M2 12L20 12M20 12L14 6M20 12L14 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </div>
+        
+        <button class="btn" id="sortear-btn">Sortear</button>
+        
+        <div class="footer">
+            <button class="reset-btn" id="reset-btn">
+                <svg class="reset-icon" viewBox="0 0 24 24">
+                    <path d="M17.65,6.35C16.2,4.9 14.21,4 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20C15.73,20 18.84,17.45 19.73,14H17.65C16.83,16.33 14.61,18 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6C13.66,6 15.14,6.69 16.22,7.78L13,11H20V4L17.65,6.35Z"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+    
+    <div class="credits">
+        (c) 2025 Rodrigo Pereira
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const arrowElement = document.querySelector('.arrow');
+            const sortearBtn = document.getElementById('sortear-btn');
+            const resetBtn = document.getElementById('reset-btn');
+            
+            // Posições da seta: 0 = para cima, 1 = para direita, 2 = para esquerda
+            const directions = [
+                {name: 'cima', degree: 270},
+                {name: 'direita', degree: 0},
+                {name: 'esquerda', degree: 180}
+            ];
+            
+            let currentDirection = 0; // Começa apontando para cima
+            
+            function sortear() {
+                // Sortear entre direita (1) e esquerda (2)
+                const randomIndex = Math.random() < 0.5 ? 1 : 2;
+                const targetDirection = randomIndex;
+                
+                // Cria uma animação personalizada com keyframes que termina na direção sorteada
+                const startDegree = 270; // Posição inicial (para cima)
+                const endDegree = directions[targetDirection].degree;
+                
+                // Define quantas voltas completas antes de parar
+                const fullRotations = 20;
+                const totalRotation = fullRotations * 360 + endDegree - startDegree;
+                
+                // Cria um estilo para a animação personalizada
+                const styleElement = document.createElement('style');
+                styleElement.textContent = `
+                    @keyframes spinToDirection {
+                        0% { transform: rotate(${startDegree}deg); }
+                        100% { transform: rotate(${startDegree + totalRotation}deg); }
+                    }
+                `;
+                document.head.appendChild(styleElement);
+                
+                // Aplica a animação personalizada
+                arrowElement.style.animation = 'spinToDirection 1s cubic-bezier(0.2, 0.1, 0.8, 1) forwards';
+                
+                // Desabilita os botões durante a animação
+                sortearBtn.disabled = true;
+                resetBtn.disabled = true;
+                
+                // Após 1 segundo, a animação termina
+                setTimeout(function() {
+                    // Atualiza a direção atual
+                    currentDirection = targetDirection;
+                    
+                    // Adiciona o efeito de piscar
+                    arrowElement.classList.add('blinking');
+                    
+                    // Remove a classe de piscar após a animação terminar
+                    setTimeout(function() {
+                        arrowElement.classList.remove('blinking');
+                        
+                        // Remove o estilo inline de animação e aplica o transform diretamente
+                        arrowElement.style.animation = '';
+                        arrowElement.style.transform = `rotate(${endDegree}deg)`;
+                        
+                        // Reabilita os botões
+                        sortearBtn.disabled = false;
+                        resetBtn.disabled = false;
+                        
+                        // Remove o elemento de estilo
+                        document.head.removeChild(styleElement);
+                    }, 500);
+                }, 1000);
+            }
+            
+            function reset() {
+                // Retorna para a posição inicial (para cima)
+                currentDirection = 0;
+                arrowElement.style.transform = `rotate(${directions[currentDirection].degree}deg)`;
+            }
+            
+            // Adiciona eventos aos botões
+            sortearBtn.addEventListener('click', sortear);
+            resetBtn.addEventListener('click', reset);
+        });
+    </script>
+</body>
+</html>
